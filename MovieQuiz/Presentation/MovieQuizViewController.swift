@@ -13,9 +13,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
     private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
+   
     
     @IBAction func yesButtonClicked(_ sender: Any) {
-        questionFactory.requestNextQuestion()
         guard let currentQuestion = currentQuestion else {return}
         let givenAnswer = true
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
@@ -23,7 +23,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
     }
     
     @IBAction func noButtonClicked(_ sender: Any) {
-        questionFactory.requestNextQuestion()
         let givenAnswer = false
         guard let currentQuestion = currentQuestion else {return}
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
@@ -38,8 +37,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
         self.questionFactory = questionFactory
         self.questionFactory.requestNextQuestion()
     }
-    // MARK: - QuestionFactoryDelegate
     
+    override func viewDidAppear(_ animated: Bool) {
+        let loadedCount = UserDefaults.standard.integer(forKey: "counterValue")
+        print(loadedCount)
+        if loadedCount != 0  {
+            let model = AlertModel(title: "Предыдущий запуск", message: "Ваш результат: \(loadedCount)/10", buttonText: "Хорошо") {
+            }
+            alertPresenter.show(in: self, model: model)
+        }
+    }
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
         currentQuestion = question
@@ -84,25 +91,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
                 self.questionFactory.requestNextQuestion()
+                
             }
+            UserDefaults.standard.set(self.correctAnswers, forKey: "counterValue")
             alertPresenter.show(in: self, model: model)
         } else {
             currentQuestionIndex += 1
             questionFactory.requestNextQuestion()
         }
     }
+    
 }
 
-
-//let alert = UIAlertController(
-//    title: "Этот раунд окончен!",
-//    message: "Ваш результат: \(correctAnswers)/10",
-//    preferredStyle: .alert)
-//let action = UIAlertAction(title: "Сыграть ещё раз", style: .default) {[weak self] _ in
-//    guard let self = self else { return }
-//    self.currentQuestionIndex = 0
-//    self.correctAnswers = 0
-//    questionFactory.requestNextQuestion()
-//}
-//alert.addAction(action)
-//self.present(alert, animated: true, completion: nil)
