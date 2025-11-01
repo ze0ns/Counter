@@ -4,7 +4,8 @@
 //
 //  Created by Oschepkov Aleksandr on 10.10.2025.
 //
-
+import Foundation
+import UIKit
 
 struct AlertModel {
     var title: String
