@@ -13,7 +13,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
     private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
-   
+    private var statisticService: StatisticServiceProtocol = StatisticService()
     
     @IBAction func yesButtonClicked(_ sender: Any) {
         guard let currentQuestion = currentQuestion else {return}
@@ -30,22 +30,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
     
     
     override func viewDidLoad() {
+
         configureImageView()
         super.viewDidLoad()
         let questionFactory = QuestionFactory()
         questionFactory.setup(delegate: self)
         self.questionFactory = questionFactory
         self.questionFactory.requestNextQuestion()
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let loadedCount = UserDefaults.standard.integer(forKey: "counterValue")
-        print(loadedCount)
-        if loadedCount != 0  {
-            let model = AlertModel(title: "Предыдущий запуск", message: "Ваш результат: \(loadedCount)/10", buttonText: "Хорошо") {
-            }
-            alertPresenter.show(in: self, model: model)
-        }
+
     }
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
@@ -85,13 +81,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
     }
     
     private func showNextQuestionOrResults() {
+        let statistic = statisticService
         imageView.layer.borderColor = UIColor.ypBlack.cgColor
         if currentQuestionIndex == questionsAmount - 1 {
-            let model = AlertModel(title: "Этот раунд окончен!", message: "Ваш результат: \(correctAnswers)/10", buttonText: "Сыграть ещё раз") {
+            let model = AlertModel(title: "Этот раунд окончен!",
+                                   message: "Ваш результат: \(correctAnswers)/10 \n Количество сигранных квизов \(statistic.gamesCount) \n Рекорд \(statistic.bestGame.correct)/10 (\(statistic.bestGame.date)) \n Средняя точность: \(String(format: "%.2f", statistic.totalAccuracy))%",
+                                   buttonText: "Сыграть ещё раз")
+            {
+                statistic.store(correct: self.correctAnswers, total: 10)
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
                 self.questionFactory.requestNextQuestion()
-                
             }
             UserDefaults.standard.set(self.correctAnswers, forKey: "counterValue")
             alertPresenter.show(in: self, model: model)

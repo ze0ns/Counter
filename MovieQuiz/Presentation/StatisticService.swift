@@ -55,17 +55,10 @@ final class StatisticService: StatisticServiceProtocol{
     
     func store(correct count: Int, total amount: Int) {
         if self.bestGame.correct < count {
-            self.gamesCount = +1
-            let bestGame = GameResult(correct: count, total: 10, date: Date().dateTimeString)
+            let bestGame = GameResult(correct: count, total: amount, date: Date().dateTimeString)
             self.bestGame = bestGame
-            let model = AlertModel(title: "Предыдущий запуск", message: "Ваш результат: \(loadedCount)/10", buttonText: "Хорошо") {
-            }
-            alertPresenter.show(in: self, model: model)
         } else {
-            
-            let model = AlertModel(title: "Предыдущий запуск", message: "Ваш результат: \(loadedCount)/10", buttonText: "Хорошо") {
-            }
-            alertPresenter.show(in: self, model: model)
+            self.gamesCount = +1
         }
     }
     private enum Keys: String {
