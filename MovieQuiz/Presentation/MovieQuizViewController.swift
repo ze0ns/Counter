@@ -40,9 +40,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
         
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-
-    }
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
         currentQuestion = question
@@ -84,11 +81,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
         let statistic = statisticService
         imageView.layer.borderColor = UIColor.ypBlack.cgColor
         if currentQuestionIndex == questionsAmount - 1 {
+            statistic.store(correct: self.correctAnswers, total: 10)
             let model = AlertModel(title: "Этот раунд окончен!",
                                    message: "Ваш результат: \(correctAnswers)/10 \n Количество сигранных квизов \(statistic.gamesCount) \n Рекорд \(statistic.bestGame.correct)/10 (\(statistic.bestGame.date)) \n Средняя точность: \(String(format: "%.2f", statistic.totalAccuracy))%",
                                    buttonText: "Сыграть ещё раз")
+         
             {
-                statistic.store(correct: self.correctAnswers, total: 10)
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
                 self.questionFactory.requestNextQuestion()

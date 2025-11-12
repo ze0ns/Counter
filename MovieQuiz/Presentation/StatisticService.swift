@@ -47,18 +47,27 @@ final class StatisticService: StatisticServiceProtocol{
             storage.set(newValue, forKey: Keys.totalCorrectAnswers.rawValue)
         }
     }
+    private var totalQuestions: Int {
+        get {
+            storage.integer(forKey: Keys.totalGamesGuestions.rawValue)
+        }
+        set {
+            storage.set(newValue, forKey: Keys.totalGamesGuestions.rawValue)
+        }
+    }
     var totalAccuracy: Double{
         get{
-            if (totalCorrectAnswers != 0) {Double((totalCorrectAnswers/gamesCount * 10) * 100)} else {0}
+            if (totalCorrectAnswers != 0) {Double(totalCorrectAnswers)/Double(totalQuestions) * 100} else {0}
         }
     }
     
     func store(correct count: Int, total amount: Int) {
+        totalQuestions = totalQuestions + amount
+        totalCorrectAnswers = totalCorrectAnswers + count
+        gamesCount = gamesCount + 1
         if self.bestGame.correct < count {
             let bestGame = GameResult(correct: count, total: amount, date: Date().dateTimeString)
             self.bestGame = bestGame
-        } else {
-            self.gamesCount = +1
         }
     }
     private enum Keys: String {
@@ -67,6 +76,7 @@ final class StatisticService: StatisticServiceProtocol{
         case bestGameTotal       // Для общего количества вопросов в лучшей игре
         case bestGameDate        // Для даты лучшей игры
         case totalCorrectAnswers // Для общего количества правильных ответов за все игры
+        case totalGamesGuestions    // Для общего количества вопросов за все игры
     }
     
 }
