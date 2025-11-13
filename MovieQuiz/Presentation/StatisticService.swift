@@ -47,7 +47,7 @@ final class StatisticService: StatisticServiceProtocol {
         totalQuestions += amount
         totalCorrectAnswers += count
         gamesCount += 1
-        
+        print((Double(totalCorrectAnswers) / Double(totalQuestions)))
         if count > bestGame.correct {
             let newBestGame = GameResult(
                 correct: count,

@@ -2,44 +2,36 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  {
     
-    private var currentQuestionIndex = 0
-    private var correctAnswers = 0
-    
+    // MARK: - Outlets
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
     
+    // MARK: - Properties
+    private var currentQuestionIndex = 0
+    private var correctAnswers = 0
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
     private var statisticService: StatisticServiceProtocol = StatisticService()
     
+    // MARK: - Actions
     @IBAction func yesButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {return}
-        let givenAnswer = true
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-        
+        handleAnswer(true)
     }
-    
     @IBAction func noButtonClicked(_ sender: Any) {
-        let givenAnswer = false
-        guard let currentQuestion = currentQuestion else {return}
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        handleAnswer(false)
     }
     
-    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
-
-        configureImageView()
         super.viewDidLoad()
-        let questionFactory = QuestionFactory()
-        questionFactory.setup(delegate: self)
-        self.questionFactory = questionFactory
-        self.questionFactory.requestNextQuestion()
-        
+        configureImageView()
+        setupQuestionFactory()
+        questionFactory.requestNextQuestion()
     }
-    
+    // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
         currentQuestion = question
@@ -48,6 +40,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
             self?.show(quiz: viewModel)
         }
     }
+    // MARK: - Private Methods
+    private func handleAnswer(_ givenAnswer: Bool) {
+        guard let currentQuestion = currentQuestion else { return }
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+    }
+    
+    private func setupQuestionFactory() {
+        let questionFactory = QuestionFactory()
+        questionFactory.setup(delegate: self)
+        self.questionFactory = questionFactory
+    }
+
     private func configureImageView(){
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
@@ -85,7 +89,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
             let model = AlertModel(title: "Этот раунд окончен!",
                                    message: "Ваш результат: \(correctAnswers)/10 \n Количество сигранных квизов \(statistic.gamesCount) \n Рекорд \(statistic.bestGame.correct)/10 (\(statistic.bestGame.date)) \n Средняя точность: \(String(format: "%.2f", statistic.totalAccuracy))%",
                                    buttonText: "Сыграть ещё раз")
-         
+            
             {
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
