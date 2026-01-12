@@ -17,13 +17,13 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private weak var viewController: MovieQuizViewController?
     private var alertPresenter = AlertPresenter()
     private var statisticService: StatisticServiceProtocol!
-    private var questionFactory: QuestionFactoryProtocol?
+    var questionFactory: QuestionFactoryProtocol?
+    var givenAnswers = true
     
     init(viewController: MovieQuizViewController){
         self.viewController = viewController
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
-        statisticService = StatisticService()
         viewController.showLoadingIndicator()
     }
     
@@ -42,6 +42,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     func handleAnswer(_ givenAnswer: Bool) {
         guard let currentQuestion = currentQuestion else { return }
+        self.givenAnswers = givenAnswer
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -56,53 +57,24 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        viewController?.activityIndicator.isHidden = true
+        viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData(with error: Error) {
         let message = error.localizedDescription
-        showNetworkError(message: message)
+        viewController?.showNetworkError(message: message)
     }
-    func showNetworkError(message: String) {
-        viewController?.activityIndicator.isHidden = true
-        let errorModel = AlertModel(title: "Ошибка", message: "Сообщение ошибки", buttonText: "Попробовать еще раз") {
-            print("retry")
-            self.resetQuestionIndex()
-            self.correctAnswers = 0
-            self.restartGame()
-        }
-        alertPresenter.show(in: self.viewController!, model: errorModel)
-    }
-    func showNextQuestionOrResults() {
-        let statistic = statisticService
-        guard let statistic = statistic else {return}
-        viewController?.imageView.layer.borderColor = UIColor.ypBlack.cgColor
-        if isLastQuestion() {
-            statisticService.store(correct: self.correctAnswers, total: questionsAmount)
-            let model = AlertModel(title: "Этот раунд окончен!",
-                                   message: "Ваш результат: \(correctAnswers)/10 \n Количество сигранных квизов \(statistic.gamesCount) \n Рекорд \(statistic.bestGame.correct)/10 (\(statistic.bestGame.date)) \n Средняя точность: \(String(format: "%.2f", statistic.totalAccuracy))%",
-                                   buttonText: "Сыграть ещё раз")
-            {
-                self.resetQuestionIndex()
-                self.correctAnswers = 0
-                self.questionFactory?.requestNextQuestion()
-            }
-            UserDefaults.standard.set(self.correctAnswers, forKey: "counterValue")
-            alertPresenter.show(in: self.viewController!, model: model)
-        } else {
-            switchToNextQuestion()
-            questionFactory?.requestNextQuestion()
-        }
-    }
+
     func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
         }
-        viewController?.imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        guard let currentQuestion = currentQuestion else { return }
+        viewController?.configureImageView(isCorrect: self.givenAnswers)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
-            self.showNextQuestionOrResults()
+            self.viewController?.showNextQuestionOrResults()
         }
     }
     
