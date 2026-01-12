@@ -9,6 +9,7 @@
 import UIKit
 
 final class MovieQuizPresenter: QuestionFactoryDelegate {
+    
     let questionsAmount: Int = 10
     var correctAnswers = 0
     private var currentQuestionIndex: Int = 0
@@ -37,11 +38,11 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
-
+    
     
     func handleAnswer(_ givenAnswer: Bool) {
         guard let currentQuestion = currentQuestion else { return }
-        viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -61,7 +62,17 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     func didFailToLoadData(with error: Error) {
         let message = error.localizedDescription
-        viewController?.showNetworkError(message: message)
+        showNetworkError(message: message)
+    }
+    func showNetworkError(message: String) {
+        viewController?.activityIndicator.isHidden = true
+        let errorModel = AlertModel(title: "Ошибка", message: "Сообщение ошибки", buttonText: "Попробовать еще раз") {
+            print("retry")
+            self.resetQuestionIndex()
+            self.correctAnswers = 0
+            self.restartGame()
+        }
+        alertPresenter.show(in: self.viewController!, model: errorModel)
     }
     func showNextQuestionOrResults() {
         let statistic = statisticService
@@ -84,9 +95,18 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             questionFactory?.requestNextQuestion()
         }
     }
-
+    func showAnswerResult(isCorrect: Bool) {
+        if isCorrect {
+            correctAnswers += 1
+        }
+        viewController?.imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            self.showNextQuestionOrResults()
+        }
+    }
     
-     func convert(model: QuizQuestion) -> QuizStepViewModel {
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,

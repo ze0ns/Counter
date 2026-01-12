@@ -39,16 +39,7 @@ final class MovieQuizViewController: UIViewController  {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
-    func showNetworkError(message: String) {
-        activityIndicator.isHidden = true
-        let errorModel = AlertModel(title: "Ошибка", message: "Сообщение ошибки", buttonText: "Попробовать еще раз") {
-            print("retry")
-            self.presenter.resetQuestionIndex()
-            self.presenter.correctAnswers = 0
-            self.presenter.restartGame()
-        }
-        alertPresenter.show(in: self, model: errorModel)
-    }
+
     private func configureImageView(){
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
@@ -61,16 +52,5 @@ final class MovieQuizViewController: UIViewController  {
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
     }
-    func showAnswerResult(isCorrect: Bool) {
-        if isCorrect {
-            presenter.correctAnswers += 1
-        }
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.showNextQuestionOrResults()
-        }
-    }
-
 }
 
