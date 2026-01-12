@@ -12,7 +12,6 @@ final class MovieQuizViewController: UIViewController  {
     // MARK: - Properties
     private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
-    private var statisticService: StatisticServiceProtocol = StatisticService()
     private var presenter: MovieQuizPresenter!
     
     // MARK: - Actions
@@ -31,7 +30,6 @@ final class MovieQuizViewController: UIViewController  {
         configureImageView()
         imageView.layer.cornerRadius = 20
         presenter = MovieQuizPresenter(viewController: self)
-        statisticService = StatisticService()
         showLoadingIndicator()
     }
 

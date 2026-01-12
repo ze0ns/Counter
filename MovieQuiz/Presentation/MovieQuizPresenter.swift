@@ -15,13 +15,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     var currentQuestion: QuizQuestion?
     private weak var viewController: MovieQuizViewController?
     private var alertPresenter = AlertPresenter()
-    private var statisticService: StatisticServiceProtocol = StatisticService()
+    private var statisticService: StatisticServiceProtocol!
     private var questionFactory: QuestionFactoryProtocol?
     
     init(viewController: MovieQuizViewController){
         self.viewController = viewController
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
+        statisticService = StatisticService()
         viewController.showLoadingIndicator()
     }
     
@@ -64,9 +65,10 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     func showNextQuestionOrResults() {
         let statistic = statisticService
+        guard let statistic = statistic else {return}
         viewController?.imageView.layer.borderColor = UIColor.ypBlack.cgColor
         if isLastQuestion() {
-            statistic.store(correct: self.correctAnswers, total: questionsAmount)
+            statisticService.store(correct: self.correctAnswers, total: questionsAmount)
             let model = AlertModel(title: "Этот раунд окончен!",
                                    message: "Ваш результат: \(correctAnswers)/10 \n Количество сигранных квизов \(statistic.gamesCount) \n Рекорд \(statistic.bestGame.correct)/10 (\(statistic.bestGame.date)) \n Средняя точность: \(String(format: "%.2f", statistic.totalAccuracy))%",
                                    buttonText: "Сыграть ещё раз")
