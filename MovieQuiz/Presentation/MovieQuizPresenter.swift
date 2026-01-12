@@ -8,15 +8,22 @@
 
 import UIKit
 
-final class MovieQuizPresenter {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     let questionsAmount: Int = 10
     var correctAnswers = 0
     private var currentQuestionIndex: Int = 0
     var currentQuestion: QuizQuestion?
-    weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewController?
     private var alertPresenter = AlertPresenter()
     private var statisticService: StatisticServiceProtocol = StatisticService()
-    var questionFactory: QuestionFactory?
+    private var questionFactory: QuestionFactoryProtocol?
+    
+    init(viewController: MovieQuizViewController){
+        self.viewController = viewController
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        viewController.showLoadingIndicator()
+    }
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
@@ -35,6 +42,8 @@ final class MovieQuizPresenter {
         guard let currentQuestion = currentQuestion else { return }
         viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
+    
+    // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
         currentQuestion = question
@@ -42,6 +51,16 @@ final class MovieQuizPresenter {
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.show(quiz: viewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        viewController?.activityIndicator.isHidden = true
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        let message = error.localizedDescription
+        viewController?.showNetworkError(message: message)
     }
     func showNextQuestionOrResults() {
         let statistic = statisticService
@@ -71,4 +90,10 @@ final class MovieQuizPresenter {
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
+    func restartGame() {
+        currentQuestionIndex = 0
+        correctAnswers = 0
+        questionFactory?.requestNextQuestion()
+    }
+    
 }
