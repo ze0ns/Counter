@@ -21,7 +21,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     var givenAnswers = true
     
     init(viewController: MovieQuizViewController){
-        self.viewController = viewController
+        self.viewController = viewController as? MovieQuizViewController
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
         viewController.showLoadingIndicator()

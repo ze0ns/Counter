@@ -7,6 +7,34 @@
 
 import XCTest
 @testable import MovieQuiz
+final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol{
+    func showLoadingIndicator() {
+
+    }
+    
+    func hideLoadingIndicator() {
+    
+    }
+    
+    func configureImageView(isCorrect: Bool) {
+    
+    }
+    
+    func show(quiz step: QuizStepViewModel) {
+        
+    }
+    
+    func showNextQuestionOrResults() {
+        
+    }
+    
+    func showNetworkError(message: String) {
+        
+    }
+    
+    
+}
+
 final class MovieQuizPresenterTests: XCTestCase {
     func testPresenterConvertModel() throws {
          let viewControllerMock = MovieQuizViewControllerMock()
