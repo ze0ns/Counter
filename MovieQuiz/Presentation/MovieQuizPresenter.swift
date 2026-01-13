@@ -20,7 +20,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     var questionFactory: QuestionFactoryProtocol?
     var givenAnswers = true
     
-    init(viewController: MovieQuizViewController){
+    init(viewController: MovieQuizViewControllerProtocol){
         self.viewController = viewController as? MovieQuizViewController
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
