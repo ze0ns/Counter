@@ -4,7 +4,6 @@
 //
 //  Created by Oschepkov Aleksandr on 13.01.2026.
 //
-
 import XCTest
 @testable import MovieQuiz
 final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol{
