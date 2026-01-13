@@ -5,15 +5,17 @@
 //  Created by Oschepkov Aleksandr on 15.11.2025.
 //
 import Foundation
+
 protocol NetworkRouting {
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void)
 }
-struct NetworkClient: NetworkRouting {
 
+struct NetworkClient: NetworkRouting {
+    // MARK: - Keys
     private enum NetworkError: Error {
         case codeError
     }
-    
+    // MARK: - Public Methods
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
         let request = URLRequest(url: url)
         

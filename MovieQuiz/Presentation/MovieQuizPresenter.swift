@@ -41,9 +41,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     
     func handleAnswer(_ givenAnswer: Bool) {
-        guard let currentQuestion = currentQuestion else { return }
-        self.givenAnswers = givenAnswer
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        if let currentQuestion {
+            self.givenAnswers = givenAnswer
+            showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+            viewController?.buttonYes.isEnabled = false
+            viewController?.buttonNo.isEnabled = false
+        } else {
+            return
+        }
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -52,6 +57,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         currentQuestion = question
         let viewModel = convert(model: question)
         DispatchQueue.main.async { [weak self] in
+            self?.viewController?.buttonYes.isEnabled = true
+            self?.viewController?.buttonNo.isEnabled = true
             self?.viewController?.show(quiz: viewModel)
         }
     }
@@ -70,7 +77,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         if isCorrect {
             correctAnswers += 1
         }
-        guard let currentQuestion = currentQuestion else { return }
         viewController?.configureImageView(isCorrect: self.givenAnswers)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }

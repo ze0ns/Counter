@@ -7,6 +7,8 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet weak var buttonYes: UIButton!
+    @IBOutlet weak var buttonNo: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Properties
@@ -62,7 +64,8 @@ final class MovieQuizViewController: UIViewController {
             let model = AlertModel(title: "Этот раунд окончен!",
                                    message: "Ваш результат: \(presenter.correctAnswers)/10 \n Количество сигранных квизов \(statistic.gamesCount) \n Рекорд \(statistic.bestGame.correct)/10 (\(statistic.bestGame.date)) \n Средняя точность: \(String(format: "%.2f", statistic.totalAccuracy))%",
                                    buttonText: "Сыграть ещё раз")
-            {
+            { [weak self] in
+                guard let self = self else { return }
                 self.presenter.resetQuestionIndex()
                 self.presenter.correctAnswers = 0
                 self.presenter.questionFactory?.requestNextQuestion()
@@ -76,7 +79,8 @@ final class MovieQuizViewController: UIViewController {
     }
     func showNetworkError(message: String) {
         activityIndicator.isHidden = true
-        let errorModel = AlertModel(title: "Ошибка", message: "Сообщение ошибки", buttonText: "Попробовать еще раз") {
+        let errorModel = AlertModel(title: "Ошибка", message: "Сообщение ошибки", buttonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else { return }
             self.presenter.resetQuestionIndex()
             self.presenter.correctAnswers = 0
             self.presenter.restartGame()

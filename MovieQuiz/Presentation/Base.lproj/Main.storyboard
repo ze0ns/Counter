@@ -123,6 +123,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="ButtonNo" destination="ysS-BV-cCC" id="wRF-7J-kvj"/>
+                        <outlet property="ButtonYes" destination="rzL-ZJ-7xd" id="YMd-96-z7p"/>
                         <outlet property="activityIndicator" destination="Oll-ja-i2u" id="K8c-li-HTE"/>
                         <outlet property="counterLabel" destination="cJ8-oO-RrT" id="g9D-ff-TpS"/>
                         <outlet property="imageView" destination="B8S-yZ-CrU" id="luX-Mg-dfT"/>

@@ -6,6 +6,7 @@
 //
 import Foundation
 
+// MARK: - QuizQuestion
 struct QuizQuestion {
     let image: Data
     let text: String

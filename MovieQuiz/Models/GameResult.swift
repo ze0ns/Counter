@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 
+// MARK: - GameResult
 struct GameResult {
     let correct: Int
     let total: Int

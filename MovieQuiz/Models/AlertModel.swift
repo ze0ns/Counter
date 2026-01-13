@@ -5,8 +5,8 @@
 //  Created by Oschepkov Aleksandr on 10.10.2025.
 //
 import Foundation
-import UIKit
 
+// MARK: - AlertModel
 struct AlertModel {
     var title: String
     var message: String
