@@ -77,7 +77,6 @@ final class MovieQuizViewController: UIViewController {
     func showNetworkError(message: String) {
         activityIndicator.isHidden = true
         let errorModel = AlertModel(title: "Ошибка", message: "Сообщение ошибки", buttonText: "Попробовать еще раз") {
-            print("retry")
             self.presenter.resetQuestionIndex()
             self.presenter.correctAnswers = 0
             self.presenter.restartGame()

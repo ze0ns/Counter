@@ -1,14 +1,13 @@
 //
 //  MoviesLoaderTests.swift
-//  MovieQuiz
+//  MoviesLoaderTests
 //
-//  Created by Oschepkov Aleksandr on 12.01.2026.
+//  Created by Oschepkov Aleksandr on 13.01.2026.
 //
 
-import XCTest // не забывайте импортировать фреймворк для тестирования
-@testable import MovieQuiz // импортируем приложение для тестирования
-
-class MoviesLoaderTests: XCTestCase {
+import XCTest
+@testable import MovieQuiz 
+final class MoviesLoaderTests: XCTestCase {
     func testSuccessLoading() throws {
         // Given
         let stubNetworkClient = StubNetworkClient(emulateError: false) // говорим, что не хотим эмулировать ошибку
@@ -52,4 +51,5 @@ class MoviesLoaderTests: XCTestCase {
         
         waitForExpectations(timeout: 1)
     } 
+
 }
