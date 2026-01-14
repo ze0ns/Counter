@@ -21,7 +21,6 @@ final class QuestionFactory: QuestionFactoryProtocol {
           self.moviesLoader = moviesLoader
           self.delegate = delegate
       }
-    //private let questions: [QuizQuestion] = QuizQuestion.mockQuestions
     
     // MARK: - Public Methods
     func requestNextQuestion() {

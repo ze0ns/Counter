@@ -4,8 +4,10 @@
 //
 //  Created by Oschepkov Aleksandr on 01.11.2025.
 //
-import UIKit
+
 import Foundation
+
+// MARK: StatisticServiceProtocol
 
 protocol StatisticServiceProtocol {
     var gamesCount: Int { get }
