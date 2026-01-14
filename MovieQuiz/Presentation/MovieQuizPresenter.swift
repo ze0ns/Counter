@@ -32,20 +32,16 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         questionFactory?.loadData()
         viewController.showLoadingIndicator()
     }
-    
+    // MARK: - Public Methods
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
-    
     func resetQuestionIndex() {
         currentQuestionIndex = 0
     }
-    
     func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
-    
-    
     func handleAnswer(_ givenAnswer: Bool) {
         if let currentQuestion {
             self.givenAnswers = givenAnswer
@@ -56,8 +52,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             return
         }
     }
-    
-    // MARK: - Public Methods
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
         currentQuestion = question
@@ -68,17 +62,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             self?.viewController?.show(quiz: viewModel)
         }
     }
-    
     func didLoadDataFromServer() {
         viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
-    
     func didFailToLoadData(with error: Error) {
         let message = error.localizedDescription
         viewController?.showNetworkError(message: message)
     }
-
     func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
@@ -89,7 +80,6 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             self.viewController?.showNextQuestionOrResults()
         }
     }
-    
     func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
