@@ -10,15 +10,21 @@ import UIKit
 
 final class MovieQuizPresenter: QuestionFactoryDelegate {
     
+    // MARK: - Constants Properties
     let questionsAmount: Int = 10
+    
+    // MARK: - Public Properties
     var correctAnswers = 0
-    private var currentQuestionIndex: Int = 0
     var currentQuestion: QuizQuestion?
+    var questionFactory: QuestionFactoryProtocol?
+    var givenAnswers = true
+    
+    // MARK: - Private Properties
+    private var currentQuestionIndex: Int = 0
     private weak var viewController: MovieQuizViewController?
     private var alertPresenter = AlertPresenter()
     private var statisticService: StatisticServiceProtocol!
-    var questionFactory: QuestionFactoryProtocol?
-    var givenAnswers = true
+
     
     init(viewController: MovieQuizViewControllerProtocol){
         self.viewController = viewController as? MovieQuizViewController
@@ -51,7 +57,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
-    // MARK: - QuestionFactoryDelegate
+    // MARK: - Public Methods
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
         currentQuestion = question

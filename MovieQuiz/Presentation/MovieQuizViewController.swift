@@ -11,11 +11,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     @IBOutlet weak var buttonNo: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    // MARK: - Properties
+    // MARK: - Private Properties
     private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
     private var presenter: MovieQuizPresenter!
     private var statisticService: StatisticServiceProtocol = StatisticService()
+    
     // MARK: - Actions
     @IBAction func yesButtonClicked(_ sender: Any) {
         presenter.handleAnswer(true)
@@ -34,7 +35,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         showLoadingIndicator()
     }
 
-    // MARK: - Private Methods
+    // MARK: - Public Methods
  
     func showLoadingIndicator() {
         activityIndicator.isHidden = false
